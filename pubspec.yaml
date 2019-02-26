@@ -10,11 +10,13 @@ description: Netease Cloud Music Study
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.0.0 <3.0.0"
 
 dependencies:
   dio:
   cached_network_image:
+  audioplayer:
+  marquee_flutter:
   flutter:
     sdk: flutter
 

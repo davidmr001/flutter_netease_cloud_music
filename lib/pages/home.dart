@@ -6,7 +6,7 @@ import '../components/title_with_more.dart';
 import '../components/personalized.dart';
 import '../components/album.dart';
 import '../components/djprogram.dart';
-
+import '../components/player.dart';
 import '../api.dart';
 import '../color.dart';
 
@@ -22,6 +22,7 @@ class _HomePage extends State<HomePage> with AutomaticKeepAliveClientMixin {
   List<Map> personalizeds = [];
   List<Map> album_newest = [];
   List<Map> djprogram = [];
+  PlayerController playerController = PlayerController();
 
   @override
   void initState() {
@@ -46,125 +47,134 @@ class _HomePage extends State<HomePage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            /**
-         * 轮播图
-         */
-            SliverToBoxAdapter(
-              child: BannerBox(banners: this.banners),
-            ),
-            /**
-         * 按钮栏
-         */
-            SliverToBoxAdapter(
-              child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: AppColors.border))),
-                  child: Flex(
-                    direction: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                          child: RoundButton(
-                              codePoint: 0xe60c, title: '私人FM', onClick: null)),
-                      Expanded(
-                          child: RoundButton(
-                              codePoint: 0xe600, title: '每日推荐', onClick: null)),
-                      Expanded(
-                          child: RoundButton(
-                              codePoint: 0xe61a, title: '歌单', onClick: null)),
-                      Expanded(
-                          child: RoundButton(
-                              codePoint: 0xe68c, title: '排行榜', onClick: null))
-                    ],
-                  )),
-            ),
+    return PlayerLayout(
+      controller: playerController,
+      hidden: false,
+      child: RefreshIndicator(
+          child: CustomScrollView(
+            slivers: <Widget>[
+              /**
+               * 轮播图
+               */
+              SliverToBoxAdapter(
+                child: BannerBox(banners: this.banners),
+              ),
+              /**
+               * 按钮栏
+               */
+              SliverToBoxAdapter(
+                child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(color: AppColors.border))),
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                            child: RoundButton(
+                                codePoint: 0xe60c,
+                                title: '私人FM',
+                                onClick: null)),
+                        Expanded(
+                            child: RoundButton(
+                                codePoint: 0xe600,
+                                title: '每日推荐',
+                                onClick: null)),
+                        Expanded(
+                            child: RoundButton(
+                                codePoint: 0xe61a, title: '歌单', onClick: null)),
+                        Expanded(
+                            child: RoundButton(
+                                codePoint: 0xe68c, title: '排行榜', onClick: null))
+                      ],
+                    )),
+              ),
 
-            /**
-         * 推荐歌单
-         */
-            SliverToBoxAdapter(
-              child: TitleWithMore(
-                title: '推荐歌单',
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return PersonalizedWidget(item: this.personalizeds[index]);
-                },
-                    childCount: this.personalizeds.length >= 6
-                        ? 6
-                        : this.personalizeds.length),
-                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, //列
-                  mainAxisSpacing: 5.0,
-                  crossAxisSpacing: 5.0,
-                  childAspectRatio: 0.67,
+              /**
+               * 推荐歌单
+               */
+              SliverToBoxAdapter(
+                child: TitleWithMore(
+                  title: '推荐歌单',
                 ),
               ),
-            ),
-            /**
-         * 最新专辑
-         */
-            SliverToBoxAdapter(
-              child: TitleWithMore(
-                title: '最新专辑',
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return AlbumWidget(item: this.album_newest[index]);
-                },
-                    childCount: this.album_newest.length >= 6
-                        ? 6
-                        : this.album_newest.length),
-                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, //列
-                  mainAxisSpacing: 5.0,
-                  crossAxisSpacing: 5.0,
-                  childAspectRatio: 0.67,
+              SliverPadding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    return PersonalizedWidget(item: this.personalizeds[index]);
+                  },
+                      childCount: this.personalizeds.length >= 6
+                          ? 6
+                          : this.personalizeds.length),
+                  gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, //列
+                    mainAxisSpacing: 5.0,
+                    crossAxisSpacing: 5.0,
+                    childAspectRatio: 0.67,
+                  ),
                 ),
               ),
-            ),
+              /**
+               * 最新专辑
+               */
+              SliverToBoxAdapter(
+                child: TitleWithMore(
+                  title: '最新专辑',
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    return AlbumWidget(item: this.album_newest[index]);
+                  },
+                      childCount: this.album_newest.length >= 6
+                          ? 6
+                          : this.album_newest.length),
+                  gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, //列
+                    mainAxisSpacing: 5.0,
+                    crossAxisSpacing: 5.0,
+                    childAspectRatio: 0.67,
+                  ),
+                ),
+              ),
 
-            /**
-         * 最新专辑
-         */
-            SliverToBoxAdapter(
-              child: TitleWithMore(
-                title: '推荐电台',
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return DjProgramWidget(item: this.djprogram[index]);
-                },
-                    childCount:
-                        this.djprogram.length >= 6 ? 6 : this.djprogram.length),
-                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, //列
-                  mainAxisSpacing: 5.0,
-                  crossAxisSpacing: 5.0,
-                  childAspectRatio: 0.67,
+              /**
+               * 最新专辑
+               */
+              SliverToBoxAdapter(
+                child: TitleWithMore(
+                  title: '推荐电台',
                 ),
               ),
-            ),
-          ],
-        ),
-        onRefresh: this.loadData);
+              SliverPadding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    return DjProgramWidget(item: this.djprogram[index]);
+                  },
+                      childCount: this.djprogram.length >= 6
+                          ? 6
+                          : this.djprogram.length),
+                  gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, //列
+                    mainAxisSpacing: 5.0,
+                    crossAxisSpacing: 5.0,
+                    childAspectRatio: 0.67,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          onRefresh: this.loadData),
+    );
     ;
   }
 
